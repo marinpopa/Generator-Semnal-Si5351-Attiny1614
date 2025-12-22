@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Frequency Range](https://img.shields.io/badge/Frequency-8kHz--150MHz-orange)
 
-A professional-grade programmable frequency generator built with **ATtiny1614/414 microcontroller** and **Si5351 clock generator module**. This open-source instrument generates three independent frequency outputs with high precision and flexible control.
+A professional-grade programmable frequency generator built with **ATtiny1614 microcontroller** and **Si5351 clock generator module**. This open-source instrument generates three independent frequency outputs with high precision and flexible control.
 
 ## ✨ Features
 
@@ -150,6 +150,7 @@ MIT License - See LICENSE file for details
 **Keywords**: frequency generator, Si5351, ATtiny1614, signal generator, clock generator, programmable oscillator, RF source, lab equipment, DIY instrumentation, Arduino project, electronics hobbyist, microcontroller project
 
 **Categories**: Electronics, Test Equipment, Arduino, Microcontrollers, RF Design
+
 
 
 

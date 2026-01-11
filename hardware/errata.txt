@@ -1,0 +1,1 @@
+Between the SW pin and ground (GND), a capacitor of 10–100 nF should be connected

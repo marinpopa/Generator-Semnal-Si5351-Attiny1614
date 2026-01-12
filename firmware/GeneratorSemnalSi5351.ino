@@ -19,7 +19,7 @@ Si5351 si5351;
 
 // ---------------- CONSTANTE ----------------
 const uint32_t FREQ_MIN = 8000UL;
-const uint32_t FREQ_MAX = 150000000UL;
+const uint32_t FREQ_MAX = 160000000UL;
 
 const uint32_t stepList[] = {
   1UL, 10UL, 100UL, 1000UL, 10000UL, 100000UL, 1000000UL
@@ -382,3 +382,4 @@ void showCalibrationMenu() {
     if (buttonPressed()) return;
   }
 }
+

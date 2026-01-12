@@ -142,12 +142,30 @@ void saveEEPROM() {
 
 // ================= ENCODER / BUTON =================
 void readEncoder() {
-  uint8_t A = digitalRead(ENC_A_PIN);
-  if (A != lastA) {
-    if (digitalRead(ENC_B_PIN) != A) encoderDelta++;
-    else encoderDelta--;
+  static uint8_t oldState = 3;
+  static uint32_t lastChange = 0;
+  
+  uint32_t now = millis();
+  if (now - lastChange < 5) return; // Debounce 5ms
+  
+  uint8_t newState = (digitalRead(ENC_A_PIN) << 1) | digitalRead(ENC_B_PIN);
+  
+  if (newState != oldState) {
+    // Tranziții valide pentru encoder
+    uint8_t transition = (oldState << 2) | newState;
+    
+    if (transition == 0b0001 || transition == 0b0111 || 
+        transition == 0b1110 || transition == 0b1000) {
+      encoderDelta++; // Rotire spre dreapta
+    }
+    else if (transition == 0b0010 || transition == 0b0100 || 
+             transition == 0b1101 || transition == 0b1011) {
+      encoderDelta--; // Rotire spre stânga
+    }
+    
+    oldState = newState;
+    lastChange = now;
   }
-  lastA = A;
 }
 
 bool buttonPressed() {

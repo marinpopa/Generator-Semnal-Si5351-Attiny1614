@@ -1,6 +1,6 @@
 /*
- * ATtiny414/1614 + Si5351 + LCD I2C 16x2 + Encoder
- * Optimizat: fără float, texte în PROGMEM, cod compact, afișare cu snprintf()
+ * ATtiny1614/1616/3216 + Si5351 + LCD I2C 16x2 + Encoder
+ * Optimizat:  texte în PROGMEM, cod compact, afișare cu snprintf()
  */
 
 #include <Wire.h>
@@ -40,9 +40,9 @@ Settings cfg;
 // ---------------- VARIABILE MENIU ----------------
 volatile int8_t encoderDelta = 0;
 uint8_t lastA = 0;
+
 unsigned long lastButtonTime = 0;
 const unsigned long debounceTime = 200;
-
 uint8_t currentCLK = 0;
 int8_t mainPos = 0;
 
@@ -143,30 +143,38 @@ void saveEEPROM() {
 // ================= ENCODER / BUTON =================
 void readEncoder() {
   static uint8_t oldState = 3;
-  static uint32_t lastChange = 0;
-  
-  uint32_t now = millis();
-  if (now - lastChange < 5) return; // Debounce 5ms
-  
-  uint8_t newState = (digitalRead(ENC_A_PIN) << 1) | digitalRead(ENC_B_PIN);
-  
-  if (newState != oldState) {
-    // Tranziții valide pentru encoder
-    uint8_t transition = (oldState << 2) | newState;
-    
-    if (transition == 0b0001 || transition == 0b0111 || 
-        transition == 0b1110 || transition == 0b1000) {
-      encoderDelta++; // Rotire spre dreapta
-    }
-    else if (transition == 0b0010 || transition == 0b0100 || 
-             transition == 0b1101 || transition == 0b1011) {
-      encoderDelta--; // Rotire spre stânga
-    }
-    
-    oldState = newState;
-    lastChange = now;
+  static int8_t stepAcc = 0;
+
+  uint8_t newState =
+    ((VPORTA.IN >> 3) & 1) << 1 |
+    ((VPORTA.IN >> 4) & 1);
+
+  if (newState == oldState) return;
+
+  uint8_t transition = (oldState << 2) | newState;
+
+  if (transition == 0b0001 || transition == 0b0111 ||
+      transition == 0b1110 || transition == 0b1000) {
+    stepAcc++;
   }
+  else if (transition == 0b0010 || transition == 0b0100 ||
+           transition == 0b1101 || transition == 0b1011) {
+    stepAcc--;
+  }
+
+  if (stepAcc >= 2) {        // mai rapid
+    encoderDelta++;
+    stepAcc = 0;
+  }
+  else if (stepAcc <= -2) {
+    encoderDelta--;
+    stepAcc = 0;
+  }
+
+  oldState = newState;
 }
+
+
 
 bool buttonPressed() {
   if (!digitalRead(ENC_SW_PIN)) {
@@ -382,4 +390,3 @@ void showCalibrationMenu() {
     if (buttonPressed()) return;
   }
 }
-
